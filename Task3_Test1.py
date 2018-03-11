@@ -1,5 +1,6 @@
 import sys
 import os
+import math
 from math import *
 from PyQt4 import QtGui, QtCore
 
@@ -18,6 +19,8 @@ class Example(QtGui.QWidget):
         self.X2=0
         self.Y2=0
         self.X_Coordinate=0
+        self.new_X=0
+        self.new_Y=0
         
         self.setGeometry(300, 200, 1000, 500)
         self.setWindowTitle('TASK 3')  
@@ -25,6 +28,7 @@ class Example(QtGui.QWidget):
         self.btn.clicked.connect(self.StoreValue1)
         self.btn1.clicked.connect(self.StoreValue2)
         self.btn2.clicked.connect(self.Calculate)
+        self.btn3.clicked.connect(self.SlopeCalculate)
         self.show()
     
     def mouseReleaseEvent(self, QMouseEvent):
@@ -46,8 +50,13 @@ class Example(QtGui.QWidget):
    
         self.btn2=QtGui.QPushButton("CALCULATE",self)
         self.btn2.resize(100,50)
-        self.btn2.move(500,20)
+        self.btn2.move(400,20)
         self.btn2.setStyleSheet("QPushButton { background-color: white }""QPushButton:pressed { background-color: lightgreen }" )
+
+        self.btn3=QtGui.QPushButton("SLOPE",self)
+        self.btn3.resize(100,50)
+        self.btn3.move(700,20)
+        self.btn3.setStyleSheet("QPushButton { background-color: white }""QPushButton:pressed { background-color: lightgreen }" )
         self.show()
 
     def initUI(self):                       
@@ -62,26 +71,35 @@ class Example(QtGui.QWidget):
         scale=actualDistance/(objectDistance)
         X_ReferenceObject=self.X2
         self.X_Coordinate = (self.RequiredDistance/scale)+ X_ReferenceObject
-        print(self.X_Coordinate)
+#        print(self.X_Coordinate)
 #        QtGui.QWidget.update(self,self.X2,self.Y2, self.rect().width() -self.X_Coordinate , self.Y2)
+        self.X_Coordinate = X_ReferenceObject + (self.RequiredDistance/scale)
+        self.radius=(self.X_Coordinate-self.X2)*(math.cos(self.angle))
+        #IS RADIUS X2_COORDINATE-X2 OR USING THE RADIUS METHOD???
+        self.new_X=self.X2+((self.radius)*math.cos(self.angle)) 
+        self.new_Y=self.Y2-((self.radius)*math.sin(self.angle))
         QtGui.QWidget.update(self)
+        
+    def SlopeCalculate(self):
+        self.slope=(self.Y1-self.Y2)/(self.X2-self.X1)#Y1-Y2 as the Y Axis start from top and move to bottom so sign was reversed
+        self.angle=math.atan(self.slope)
+        #CHECK IF IT IS 'X1' OR 'X2' DEPENDS ON WHAT USER PRESSES
 
     def paintEvent(self, event):
         painter = QtGui.QPainter(self)
-        pixmap = QtGui.QPixmap("T_L.png")
+        pixmap = QtGui.QPixmap("T_R.png")
         painter.drawPixmap(10, 100,772,248, pixmap)
 #        painter.drawPixmap(self,10, pixmap)
         pen = QtGui.QPen(QtCore.Qt.blue, 3)
         painter.setPen(pen)
-        painter.drawLine(self.X2,self.Y2, self.X_Coordinate , self.Y2)
+        painter.drawLine(self.X2,self.Y2, self.new_X , self.new_Y)
         
-        pen2 = QtGui.QPen(QtCore.Qt.green, 3)
-        pen2.setStyle(QtCore.Qt.DashLine)
-        painter.setPen(pen2)
-        painter.drawLine(self.X_Coordinate, self.Y2, self.X_Coordinate, 100)
-        painter.drawLine(self.X_Coordinate, self.Y2, self.X_Coordinate, 400)
+#        pen2 = QtGui.QPen(QtCore.Qt.green, 3)
+#        pen2.setStyle(QtCore.Qt.DashLine)
+#        painter.setPen(pen2)
+#        painter.drawLine(self.X_Coordinate, self.Y2, self.X_Coordinate, 100)
+#        painter.drawLine(self.X_Coordinate, self.Y2, self.X_Coordinate, 400)
         #Change the coordinate to the one required
-
 
     def StoreValue1(self):
         self.Y1=self.y_cordinate
