@@ -4,6 +4,7 @@ import math
 from math import *
 from PyQt4 import QtGui, QtCore
 
+#https://uk.mathworks.com/help/vision/ref/undistortimage.html
 # http://www.tannerhelland.com/4743/simple-algorithm-correcting-lens-distortion/
 #https://stackoverflow.com/questions/11790504/about-a-pyqt-example-program
 #I THINK I SHOULD CREATE SEPRATE BOXES FOR PROCESS INFORMATION AND SEND INFORMATION
@@ -13,7 +14,7 @@ class Example(QtGui.QWidget):
         super(Example, self).__init__()
          
         self.initUI()
-        self.RequiredDistance=16
+        self.RequiredDistance=70.43
         self.y_cordinate=0
         self.x_cordinate=0
         self.X2=0
@@ -61,16 +62,16 @@ class Example(QtGui.QWidget):
 
     def initUI(self):                       
         qbtn = QtGui.QPushButton('Quit', self)
-        qbtn.resize(qbtn.sizeHint())
-        qbtn.move(50, 50)
+        qbtn.resize(100,50)
+        qbtn.move(800, 50)
         
     def Calculate(self): # Assumes that the x-cordinate is constant
         objectDistance=(self.Y2-self.Y1)
 #       print(objectDistance)
-        actualDistance=9
+        actualDistance=40
         scale=actualDistance/(objectDistance)
         X_ReferenceObject=self.X2
-        self.X_Coordinate = (self.RequiredDistance/scale)+ X_ReferenceObject
+#        self.X_Coordinate = (self.RequiredDistance/scale)+ X_ReferenceObject
 #        print(self.X_Coordinate)
 #        QtGui.QWidget.update(self,self.X2,self.Y2, self.rect().width() -self.X_Coordinate , self.Y2)
         self.X_Coordinate = X_ReferenceObject + (self.RequiredDistance/scale)
@@ -86,12 +87,13 @@ class Example(QtGui.QWidget):
 #        -math.radians(80)+
 #        print((self.angle)*180/math.pi)
 #        self.angle=math.degrees(math.atan2(self.Y2 - self.Y1,self.X2 - self.X1))
-        print(math.degrees(self.angle))
+#        print(math.degrees(self.angle))
         #CHECK IF IT IS 'X1' OR 'X2' DEPENDS ON WHAT USER PRESSES
+        print(None)
 
     def paintEvent(self, event):
         painter = QtGui.QPainter(self)
-        pixmap = QtGui.QPixmap("calibresult_practice222.png")
+        pixmap = QtGui.QPixmap("cal2.png")
         painter.drawPixmap(10, 100,640,480, pixmap)
 #        painter.drawPixmap(self,10, pixmap)
         pen = QtGui.QPen(QtCore.Qt.blue, 3)
