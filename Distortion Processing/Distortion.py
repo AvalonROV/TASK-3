@@ -44,7 +44,7 @@ for fname in images:
         #print(gray.shape[::-1])
        # print(imgpoints)
 
-img = cv2.imread('test16.png')
+img = cv2.imread('test15.png')
 h,w = img.shape[:2]
 newcameramtx, roi=cv2.getOptimalNewCameraMatrix(mtx,dist,(w,h),1,(w,h))
 

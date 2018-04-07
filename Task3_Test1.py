@@ -22,6 +22,7 @@ class Example(QtGui.QWidget):
         self.X_Coordinate=0
         self.new_X=0
         self.new_Y=0
+        self.pipe_multiplier=1
         
         self.setGeometry(300, 200, 1000, 500)
         self.setWindowTitle('TASK 3')  
@@ -66,7 +67,7 @@ class Example(QtGui.QWidget):
         qbtn.move(800, 50)
         
     def Calculate(self): # Assumes that the x-cordinate is constant
-        objectDistance=(self.Y2-self.Y1)
+        objectDistance=math.sqrt((self.X2-self.X1)**2 + ((self.Y2-self.Y1)**2)) # This is a more accurate way to calculate distance than Y2-Y1
 #       print(objectDistance)
         actualDistance=37
         scale=actualDistance/(objectDistance)
@@ -77,14 +78,21 @@ class Example(QtGui.QWidget):
         self.X_Coordinate = X_ReferenceObject + (self.RequiredDistance/scale)
 #        self.radius=(self.X_Coordinate-self.X2)*(math.cos(self.angle))
         #IS RADIUS X2_COORDINATE-X2 OR USING THE RADIUS METHOD???
-        self.new_X=self.X2-((self.X_Coordinate-self.X2)*math.cos(self.angle)) 
-        self.new_Y=self.Y2+((self.X_Coordinate-self.X2)*math.sin(self.angle))
+        self.new_X=self.X2+self.pipe_multiplier*((self.X_Coordinate-self.X2)*math.cos(self.angle)) 
+        self.new_Y=self.Y2-self.pipe_multiplier*((self.X_Coordinate-self.X2)*math.sin(self.angle))
+        print(self.new_Y)
+        print(self.new_X)
         QtGui.QWidget.update(self)
         
     def SlopeCalculate(self):
         self.slope=(self.Y1-self.Y2)/(self.X2-self.X1)#Y1-Y2 as the Y Axis start from top and move to bottom so sign was reversed
+        self.pipe_orientation= (self.X2-self.X1)
+        if(self.pipe_orientation>0):
+            self.pipe_multiplier=1
+        else:
+            self.pipe_multiplier=-1
         self.angle=(math.atan(self.slope))
-        print(self.slope)
+        print(self.angle)
 #        -math.radians(80)+
 #        print((self.angle)*180/math.pi)
 #        self.angle=math.degrees(math.atan2(self.Y2 - self.Y1,self.X2 - self.X1))
@@ -110,11 +118,11 @@ class Example(QtGui.QWidget):
     def StoreValue1(self):
         self.Y1=self.y_cordinate
         self.X1=self.x_cordinate
-        print("Value 1 Stored",self.Y1,self.X1) 
+        print("Value 1 Stored",self.X1,self.Y1) 
     def StoreValue2(self):
         self.Y2=self.y_cordinate
         self.X2=self.x_cordinate
-        print("Value 2 Stored",self.Y2,self.X2)
+        print("Value 2 Stored",self.X2,self.Y2)
 
 
 def main():        
