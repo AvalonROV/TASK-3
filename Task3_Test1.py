@@ -14,7 +14,7 @@ class Example(QtGui.QWidget):
         super(Example, self).__init__()
          
         self.initUI()
-        self.RequiredDistance=70.43
+        self.RequiredDistance=60
         self.y_cordinate=0
         self.x_cordinate=0
         self.X2=0
@@ -68,7 +68,7 @@ class Example(QtGui.QWidget):
     def Calculate(self): # Assumes that the x-cordinate is constant
         objectDistance=(self.Y2-self.Y1)
 #       print(objectDistance)
-        actualDistance=40
+        actualDistance=37
         scale=actualDistance/(objectDistance)
         X_ReferenceObject=self.X2
 #        self.X_Coordinate = (self.RequiredDistance/scale)+ X_ReferenceObject
@@ -77,19 +77,19 @@ class Example(QtGui.QWidget):
         self.X_Coordinate = X_ReferenceObject + (self.RequiredDistance/scale)
 #        self.radius=(self.X_Coordinate-self.X2)*(math.cos(self.angle))
         #IS RADIUS X2_COORDINATE-X2 OR USING THE RADIUS METHOD???
-        self.new_X=self.X2+((self.X_Coordinate-self.X2)*math.cos(self.angle)) 
-        self.new_Y=self.Y2-((self.X_Coordinate-self.X2)*math.sin(self.angle))
+        self.new_X=self.X2-((self.X_Coordinate-self.X2)*math.cos(self.angle)) 
+        self.new_Y=self.Y2+((self.X_Coordinate-self.X2)*math.sin(self.angle))
         QtGui.QWidget.update(self)
         
     def SlopeCalculate(self):
         self.slope=(self.Y1-self.Y2)/(self.X2-self.X1)#Y1-Y2 as the Y Axis start from top and move to bottom so sign was reversed
         self.angle=(math.atan(self.slope))
+        print(self.slope)
 #        -math.radians(80)+
 #        print((self.angle)*180/math.pi)
 #        self.angle=math.degrees(math.atan2(self.Y2 - self.Y1,self.X2 - self.X1))
 #        print(math.degrees(self.angle))
         #CHECK IF IT IS 'X1' OR 'X2' DEPENDS ON WHAT USER PRESSES
-        print(None)
 
     def paintEvent(self, event):
         painter = QtGui.QPainter(self)
