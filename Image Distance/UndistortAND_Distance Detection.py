@@ -1,20 +1,26 @@
 import sys
 import os
 import math
+import cv2
+import numpy as np
+
 from math import *
 from PyQt4 import QtGui, QtCore
+
 
 #https://uk.mathworks.com/help/vision/ref/undistortimage.html
 # http://www.tannerhelland.com/4743/simple-algorithm-correcting-lens-distortion/
 #https://stackoverflow.com/questions/11790504/about-a-pyqt-example-program
 #I THINK I SHOULD CREATE SEPRATE BOXES FOR PROCESS INFORMATION AND SEND INFORMATION
+
 class Example(QtGui.QWidget):  
       
     def __init__(self):
         super(Example, self).__init__()
          
         self.initUI()
-        self.RequiredDistance=70.6
+        self.textBox()
+        
         self.y_cordinate=0
         self.x_cordinate=0
         self.X2=0
@@ -22,15 +28,24 @@ class Example(QtGui.QWidget):
         self.X_Coordinate=0
         self.new_X=0
         self.new_Y=0
+        self.RequiredDistance_1=0
         self.pipe_multiplier=1
+        self.roi = np.loadtxt("mtx.txt", dtype='i', delimiter=',')
+        self.newcameramtx = np.loadtxt("cameraMatrix.txt", dtype='i', delimiter=',')
+        self.dist = np.loadtxt("dist.txt", dtype='i', delimiter=',')
+        self.mtx = np.loadtxt("mtx.txt", dtype='i', delimiter=',')
         
         self.setGeometry(300, 200, 1000, 500)
         self.setWindowTitle('TASK 3')  
         self.buttonStore1()
+ 
+        
         self.btn.clicked.connect(self.StoreValue1)
         self.btn1.clicked.connect(self.StoreValue2)
         self.btn2.clicked.connect(self.Calculate)
         self.btn3.clicked.connect(self.SlopeCalculate)
+        self.btn4.clicked.connect(self.click)
+ 
         self.show()
     
     def mouseReleaseEvent(self, QMouseEvent):
@@ -59,12 +74,26 @@ class Example(QtGui.QWidget):
         self.btn3.resize(100,50)
         self.btn3.move(700,20)
         self.btn3.setStyleSheet("QPushButton { background-color: white }""QPushButton:pressed { background-color: lightgreen }" )
+        
+        self.btn4=QtGui.QPushButton("Input Required Distance",self)
+        self.btn4.resize(50,50)
+        self.btn4.move(800,200)
+        self.btn4.setStyleSheet("QPushButton { background-color: white }""QPushButton:pressed { background-color: lightgreen }" )
         self.show()
-
+        
+    def textBox(self):
+        self.textbox = QtGui.QLineEdit(self)
+        self.textbox.move(800, 100)
+        self.textbox.resize(100,50)
+    
     def initUI(self):                       
         qbtn = QtGui.QPushButton('Quit', self)
         qbtn.resize(100,50)
         qbtn.move(800, 50)
+        
+    def click(self):
+        self.RequiredDistance=float(self.textbox.text())
+        print(self.RequiredDistance)
         
     def Calculate(self): # Assumes that the x-cordinate is constant
         objectDistance=math.sqrt((self.X2-self.X1)**2 + ((self.Y2-self.Y1)**2)) # This is a more accurate way to calculate distance than Y2-Y1
@@ -93,14 +122,18 @@ class Example(QtGui.QWidget):
             self.pipe_multiplier=-1
         self.angle=(math.atan(self.slope))
         print(self.angle)
-#        -math.radians(80)+
-#        print((self.angle)*180/math.pi)
-#        self.angle=math.degrees(math.atan2(self.Y2 - self.Y1,self.X2 - self.X1))
-#        print(math.degrees(self.angle))
-        #CHECK IF IT IS 'X1' OR 'X2' DEPENDS ON WHAT USER PRESSES
 
     def paintEvent(self, event):
         painter = QtGui.QPainter(self)
+        
+        #---------IMAGE UNDISTORTION----------#
+        img = cv2.imread('test1.png')
+        h,w = img.shape[:2]
+        self.newcameramtx, self.roi=cv2.getOptimalNewCameraMatrix(self.mtx,self.dist,(w,h),1,(w,h))
+        dst = cv2.undistort(img, self.mtx, self.dist, None, self.newcameramtx)
+        cv2.imwrite('cal1.png',dst)
+        #-------------------------------------#
+        
         pixmap = QtGui.QPixmap("cal1.png")
         painter.drawPixmap(10, 100,640,480, pixmap)
 #        painter.drawPixmap(self,10, pixmap)
@@ -131,4 +164,4 @@ def main():
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
-    main()
+    main()  
